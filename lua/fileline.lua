@@ -74,4 +74,24 @@ function M.gotoline()
   return file_name
 end
 
+function M.gotolineatcursor()
+  --  get the text of the current line
+  local current = vim.api.nvim_get_current_line()
+
+  -- find the first instance of ": ", discard from that point
+  local newCurrent = ''
+  for i = 1, #current do
+    if current:sub(i, i + 1) == ': ' then break end
+    newCurrent = newCurrent .. current:sub(i, i)
+  end
+
+  local file_name, line, col = process_name(newCurrent)
+
+  if line then
+    if vim.fn.filereadable(file_name) == 0 then return end
+    reopen_and_gotoline(file_name, line, col)
+  end
+
+  return file_name
+end
 return M
