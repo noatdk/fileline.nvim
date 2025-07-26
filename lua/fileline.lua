@@ -3,16 +3,15 @@ local M = {}
 --- @param file_name string
 --- @param lnum integer
 --- @param col integer?
-local function reopen_and_gotoline(file_name, lnum, col)
+--- @param keeps boolean?
+local function reopen_and_gotoline(file_name, lnum, col, keeps)
   local bufn = vim.api.nvim_get_current_buf()
 
   vim.cmd.edit{vim.fn.fnameescape(file_name), mods = { keepalt = true }}
 
   --- Deleting the buffer in BufNewFile might cause problems with other
   --- BufNewFile autocmds so defer the deletion of the buffer.
-  vim.schedule(function()
-    vim.api.nvim_buf_delete(bufn, {})
-  end)
+  if not keeps then vim.schedule(function() vim.api.nvim_buf_delete(bufn, {}) end) end
 
   lnum = math.min(math.max(1, lnum), vim.api.nvim_buf_line_count(0))
   vim.api.nvim_win_set_cursor(0, { lnum, col and col - 1 or 0 })
@@ -74,7 +73,9 @@ function M.gotoline()
   return file_name
 end
 
-function M.gotolineatcursor()
+--- Go to a line specified under cursor.
+--- @param keeps boolean?
+function M.gotoline_at_cursor(keeps)
   --  get the text of the current line
   local current = vim.api.nvim_get_current_line()
 
@@ -89,7 +90,7 @@ function M.gotolineatcursor()
 
   if line then
     if vim.fn.filereadable(file_name) == 0 then return end
-    reopen_and_gotoline(file_name, line, col)
+    reopen_and_gotoline(file_name, line, col, keeps)
   end
 
   return file_name
