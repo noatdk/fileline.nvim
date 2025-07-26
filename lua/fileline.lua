@@ -82,7 +82,9 @@ function M.gotoline_at_cursor(keeps)
   -- find the first instance of ": ", discard from that point
   local newCurrent = ''
   for i = 1, #current do
-    if current:sub(i, i + 1) == ': ' then break end
+    if current:sub(i, i + 1):match ':[^0-9]' then
+      break
+    end
     newCurrent = newCurrent .. current:sub(i, i)
   end
 
