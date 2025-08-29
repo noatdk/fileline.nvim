@@ -75,9 +75,10 @@ end
 
 --- Go to a line specified under cursor.
 --- @param keeps boolean?
-function M.gotoline_at_cursor(keeps)
+--- @param line string?
+function M.gotoline_at_cursor(keeps, line)
   --  get the text of the current line
-  local current = vim.api.nvim_get_current_line()
+  local current = line or vim.api.nvim_get_current_line()
 
   -- find the first instance of ": ", discard from that point
   local newCurrent = ''
